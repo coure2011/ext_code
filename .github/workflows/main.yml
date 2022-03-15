@@ -1,0 +1,37 @@
+name: Feature Branch
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js 14.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14.x
+        cache: 'yarn'
+    
+    - name: Checkout Public repo
+      uses: actions/checkout@v2
+      with:
+        repository: coure2011/ext_pub
+        ref: main
+        path: mypublic
+        fetch-depth: 0
+    
+    - name: Push to new repo
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo "Hello you!" >> README.md
+        git config --global user.name 'Github'
+        git config --global user.email 'Github@users.noreply.github.com'
+        git add README.md
+        git commit -m "Changed readme"
+        git push -u origin HEAD
+      working-directory: mypublic
